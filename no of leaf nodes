@@ -1,0 +1,81 @@
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int key;
+    Node* left;
+    Node* right;
+    Node(int val) : key(val), left(NULL), right(NULL) {}
+};
+
+class BST {
+private:
+    Node* root;
+
+    Node* insertRecursive(Node* root, int key) {
+        if (root == NULL)
+            return new Node(key);
+
+        if (key < root->key)
+            root->left = insertRecursive(root->left, key);
+        else if (key > root->key)
+            root->right = insertRecursive(root->right, key);
+
+        return root;
+    }
+
+    int countLeafNodes(Node* root) {
+        if (root == NULL)
+            return 0;
+
+        if (root->left == NULL && root->right == NULL)
+            return 1;
+
+        return countLeafNodes(root->left) + countLeafNodes(root->right);
+    }
+
+    int countNonLeafNodes(Node* root) {
+        if (root == NULL || (root->left == NULL && root->right == NULL))
+            return 0;
+
+        return 1 + countNonLeafNodes(root->left) + countNonLeafNodes(root->right);
+    }
+
+public:
+    BST() : root(NULL) {}
+
+    void insert(int key) {
+        root = insertRecursive(root, key);
+    }
+
+    int countLeaves() {
+        return countLeafNodes(root);
+    }
+
+    int countNonLeaves() {
+        return countNonLeafNodes(root);
+    }
+};
+
+int main() {
+    BST bst;
+
+    // Inserting elements into BST
+    bst.insert(8);
+    bst.insert(3);
+    bst.insert(10);
+    bst.insert(1);
+    bst.insert(6);
+    bst.insert(14);
+    bst.insert(4);
+    bst.insert(7);
+    bst.insert(13);
+
+    int leafCount = bst.countLeaves();
+    int nonLeafCount = bst.countNonLeaves();
+
+    cout << "Number of leaf nodes: " << leafCount << endl;
+    cout << "Number of non-leaf nodes: " << nonLeafCount << endl;
+
+    return 0;
+}
