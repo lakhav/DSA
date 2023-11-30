@@ -1,0 +1,124 @@
+#include <iostream>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+struct Node {
+    int key;
+    Node* left;
+    Node* right;
+    Node(int val) : key(val), left(NULL), right(NULL) {}
+};
+
+class BST {
+private:
+    Node* root;
+
+    Node* insertRecursive(Node* root, int key) {
+        if (root == NULL)
+            return new Node(key);
+
+        if (key < root->key)
+            root->left = insertRecursive(root->left, key);
+        else if (key > root->key)
+            root->right = insertRecursive(root->right, key);
+
+        return root;
+    }
+
+    Node* minValueNode(Node* node) {
+        Node* current = node;
+        while (current && current->left != NULL)
+            current = current->left;
+        return current;
+    }
+
+    Node* deleteNode(Node* root, int key) {
+        if (root == NULL)
+            return root;
+
+        if (key < root->key)
+            root->left = deleteNode(root->left, key);
+        else if (key > root->key)
+            root->right = deleteNode(root->right, key);
+        else {
+            if (root->left == NULL) {
+                Node* temp = root->right;
+                delete root;
+                return temp;
+            } else if (root->right == NULL) {
+                Node* temp = root->left;
+                delete root;
+                return temp;
+            }
+
+            Node* temp = minValueNode(root->right);
+            root->key = temp->key;
+            root->right = deleteNode(root->right, temp->key);
+        }
+        return root;
+    }
+
+    int maxDepth(Node* root) {
+        if (root == NULL)
+            return 0;
+        
+        int leftDepth = maxDepth(root->left);
+        int rightDepth = maxDepth(root->right);
+
+        return max(leftDepth, rightDepth) + 1;
+    }
+
+    int minDepth(Node* root) {
+        if (root == NULL)
+            return 0;
+        
+        int leftDepth = minDepth(root->left);
+        int rightDepth = minDepth(root->right);
+
+        return min(leftDepth, rightDepth) + 1;
+    }
+
+public:
+    BST() : root(NULL) {}
+
+    void insert(int key) {
+        root = insertRecursive(root, key);
+    }
+
+    void remove(int key) {
+        root = deleteNode(root, key);
+    }
+
+    int getMaxDepth() {
+        return maxDepth(root);
+    }
+
+    int getMinDepth() {
+        return minDepth(root);
+    }
+};
+
+int main() {
+    BST bst;
+
+    bst.insert(8);
+    bst.insert(3);
+    bst.insert(10);
+    bst.insert(1);
+    bst.insert(6);
+    bst.insert(14);
+    bst.insert(4);
+    bst.insert(7);
+    bst.insert(13);
+
+    cout << "Maximum Depth of the BST: " << bst.getMaxDepth() << endl;
+    cout << "Minimum Depth of the BST: " << bst.getMinDepth() << endl;
+
+    bst.remove(6); // Removing a node to demonstrate deletion
+
+    cout << "After deletion, Maximum Depth of the BST: " << bst.getMaxDepth() << endl;
+    cout << "After deletion, Minimum Depth of the BST: " << bst.getMinDepth() << endl;
+
+    return 0;
+}
