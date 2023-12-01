@@ -1,0 +1,225 @@
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+    Node* prev;
+    Node(int val) : data(val), next(nullptr), prev(nullptr) {}
+};
+
+class DoublyLinkedList {
+private:
+    Node* head;
+
+public:
+    DoublyLinkedList() : head(nullptr) {}
+
+    void insertFirst(int val) {
+        Node* newNode = new Node(val);
+
+        if (head == nullptr) {
+            head = newNode;
+            head->next = head;
+            head->prev = head;
+        } else {
+            newNode->next = head;
+            newNode->prev = head->prev;
+            head->prev->next = newNode;
+            head->prev = newNode;
+            head = newNode;
+        }
+    }
+
+    void insertLast(int val) {
+        Node* newNode = new Node(val);
+
+        if (head == nullptr) {
+            head = newNode;
+            head->next = head;
+            head->prev = head;
+        } else {
+            newNode->next = head;
+            newNode->prev = head->prev;
+            head->prev->next = newNode;
+            head->prev = newNode;
+        }
+    }
+
+    void insertAfter(int val, int key) {
+        if (head == nullptr) {
+            cout << "List is empty. Cannot insert after a specific node." << endl;
+            return;
+        }
+
+        Node* temp = head;
+
+        do {
+            if (temp->data == key) {
+                Node* newNode = new Node(val);
+                newNode->next = temp->next;
+                newNode->prev = temp;
+                temp->next->prev = newNode;
+                temp->next = newNode;
+                return;
+            }
+            temp = temp->next;
+        } while (temp != head);
+
+        cout << "Node with key " << key << " not found." << endl;
+    }
+
+    void deleteNode(int key) {
+        if (head == nullptr) {
+            cout << "List is empty. Cannot delete." << endl;
+            return;
+        }
+
+        Node* temp = head;
+
+        do {
+            if (temp->data == key) {
+                if (temp == head && temp->next == head) {
+                    head = nullptr;
+                } else {
+                    temp->prev->next = temp->next;
+                    temp->next->prev = temp->prev;
+
+                    if (temp == head)
+                        head = temp->next;
+                }
+
+                delete temp;
+                return;
+            }
+            temp = temp->next;
+        } while (temp != head);
+
+        cout << "Node with key " << key << " not found." << endl;
+    }
+
+    bool searchNode(int key) {
+        if (head == nullptr)
+            return false;
+
+        Node* temp = head;
+
+        do {
+            if (temp->data == key)
+                return true;
+            temp = temp->next;
+        } while (temp != head);
+
+        return false;
+    }
+
+    int getSize() {
+        if (head == nullptr)
+            return 0;
+
+        int count = 0;
+        Node* temp = head;
+
+        do {
+            count++;
+            temp = temp->next;
+        } while (temp != head);
+
+        return count;
+    }
+
+    void displayCircularList() {
+        if (head == nullptr) {
+            cout << "List is empty." << endl;
+            return;
+        }
+
+        Node* temp = head;
+
+        do {
+            cout << temp->data << " ";
+            temp = temp->next;
+        } while (temp != head);
+
+        cout << endl;
+    }
+
+    void displayCircularListWithRepeat() {
+        displayCircularList();
+        cout << head->data << endl;
+    }
+};
+
+int main() {
+    DoublyLinkedList dll;
+    int choice, val, key;
+
+    do {
+        cout << "\n-------------------------";
+        cout << "\nOperations on Circular Doubly Linked List";
+        cout << "\n-------------------------\n";
+        cout << "1. Insert at the beginning\n";
+        cout << "2. Insert at the end\n";
+        cout << "3. Insert after a node\n";
+        cout << "4. Delete a node\n";
+        cout << "5. Search for a node\n";
+        cout << "6. Display all nodes without repeat\n";
+        cout << "7. Display all nodes with repeat\n";
+        cout << "8. Find size of the list\n";
+        cout << "9. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter value to insert at the beginning: ";
+                cin >> val;
+                dll.insertFirst(val);
+                break;
+            case 2:
+                cout << "Enter value to insert at the end: ";
+                cin >> val;
+                dll.insertLast(val);
+                break;
+            case 3:
+                cout << "Enter value to insert: ";
+                cin >> val;
+                cout << "Enter key value after which to insert: ";
+                cin >> key;
+                dll.insertAfter(val, key);
+                break;
+            case 4:
+                cout << "Enter value of node to delete: ";
+                cin >> val;
+                dll.deleteNode(val);
+                break;
+            case 5:
+                cout << "Enter value to search: ";
+                cin >> val;
+                if (dll.searchNode(val))
+                    cout << "Node found in the list." << endl;
+                else
+                    cout << "Node not found in the list." << endl;
+                break;
+            case 6:
+                cout << "Nodes in the list (without repeat): ";
+                dll.displayCircularList();
+                break;
+            case 7:
+                cout << "Nodes in the list (with repeat): ";
+                dll.displayCircularListWithRepeat();
+                break;
+            case 8:
+                cout << "Size of the list: " << dll.getSize() << endl;
+                break;
+            case 9:
+                cout << "Exiting..." << endl;
+                break;
+            default:
+                cout << "Invalid choice. Please enter a valid option." << endl;
+                break;
+        }
+    } while (choice != 9);
+
+    return 0;
+}
